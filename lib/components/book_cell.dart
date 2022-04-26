@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:reading_book_4k/assets/app_dimen.dart';
+import 'package:reading_book_4k/assets/app_string.dart';
 import 'package:reading_book_4k/config/app_color.dart';
 import 'package:reading_book_4k/data/titles.dart';
 
@@ -70,16 +72,16 @@ class BookCell extends StatelessWidget {
                   Text(
                     title.name,
                     style: const TextStyle(
-                      fontSize: 13,
+                      fontSize: AppDimen.textSizeSubtext,
                       color: Colors.black,
                       fontFamily: 'Baloo Tamma 2',
                       fontWeight: FontWeight.w900,
                     ),
                   ),
                   const Text(
-                    'Truyện cổ tích việt nam',
+                    AppString.stories,
                     style: TextStyle(
-                      fontSize: 13,
+                      fontSize: AppDimen.textSizeSubtext,
                       color: Colors.grey,
                       fontFamily: 'Baloo Tamma 2',
                     ),
@@ -101,9 +103,9 @@ class BookCell extends StatelessWidget {
               ),
               child: const Center(
                 child: Text(
-                  'Đọc ngay',
+                  AppString.readNow,
                   style: TextStyle(
-                    fontSize: 13,
+                    fontSize: AppDimen.textSizeSubtext,
                     color: Colors.black,
                     fontFamily: 'Baloo Tamma 2',
                     fontWeight: FontWeight.w900,

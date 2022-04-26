@@ -15,15 +15,18 @@ class AppRoute {
           builder: (BuildContext context) => const SplashScreen(),
         );
       case readingScreen:
-        return MaterialPageRoute(builder: (
-          BuildContext context,
-        ) {
-          final arguments = routeSettings.arguments;
-          return ReadingScreen(name: arguments.toString());
-        });
-      default:
         return MaterialPageRoute(
-          builder: (BuildContext context) => const OnBoard(),
+          builder: (
+            BuildContext context,
+          ) {
+            final arguments = routeSettings.arguments as List<String>;
+            return ReadingScreen(content: arguments[0], name: arguments[1], from: arguments[2]);
+          },
+        );
+      default:
+        final arguments = routeSettings.arguments as int;
+        return MaterialPageRoute(
+          builder: (BuildContext context) => OnBoard(initialIndex: arguments,),
         );
     }
   }

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:reading_book_4k/base/bloc_base.dart';
 import 'package:reading_book_4k/page/favourite/favourite_screen.dart';
@@ -9,12 +11,27 @@ import 'package:rxdart/rxdart.dart';
 class OnBoardBloc extends BlocBase {
   @override
   void dispose() {
-    // TODO: implement dispose
+    index.close();
+    page.close();
   }
 
   @override
   void init() {
-    // TODO: implement init
+    log('oninit been called');
+    pages = [
+      HomeScreen(
+        callToNav: (type) {
+          if (type == 'THƯ VIỆN') {
+            changeIndex(2);
+          } else {
+            changeIndex(1);
+          }
+        },
+      ),
+      const FavouriteScreen(),
+      const LibraryScreen(),
+      const OnphoneScreen()
+    ];
   }
 
   BehaviorSubject<int> index = BehaviorSubject.seeded(0);
@@ -23,12 +40,7 @@ class OnBoardBloc extends BlocBase {
     page.sink.add(pages[i]);
   }
 
-  List<Widget> pages = [
-    const HomeScreen(),
-    const FavouriteScreen(),
-    const LibraryScreen(),
-    const OnphoneScreen()
-  ];
+  late final List<Widget> pages;
 
-  BehaviorSubject<Widget> page = BehaviorSubject.seeded(const HomeScreen());
+  BehaviorSubject<Widget> page = BehaviorSubject();
 }

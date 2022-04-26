@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:reading_book_4k/assets/app_dimen.dart';
+import 'package:reading_book_4k/assets/app_string.dart';
 import 'package:reading_book_4k/components/book_cover.dart';
 import 'package:reading_book_4k/data/titles.dart';
 import 'package:reading_book_4k/page/favourite/favourite_bloc.dart';
@@ -6,6 +8,7 @@ import 'package:reading_book_4k/page/favourite/favourite_bloc.dart';
 class FavouriteScreen extends StatelessWidget {
   const FavouriteScreen({Key? key}) : super(key: key);
 
+  
   @override
   Widget build(BuildContext context) {
     FavouriteBloc bloc = FavouriteBloc();
@@ -20,10 +23,10 @@ class FavouriteScreen extends StatelessWidget {
           return titles.isEmpty
               ? const Center(
                   child: Text(
-                    'DANH SÁCH TRỐNG',
+                    AppString.emptyList,
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                        fontSize: 32,
+                        fontSize: AppDimen.textSizeBody1,
                         fontWeight: FontWeight.bold,
                         color: Colors.grey),
                   ),
@@ -32,7 +35,7 @@ class FavouriteScreen extends StatelessWidget {
                   crossAxisCount: 3,
                   childAspectRatio: 2 / 3,
                   children: [
-                    for (var title in titles) BookCover(title: title),
+                    for (var title in titles) BookCover(title: title, from: 'favorites'),
                   ],
                 );
         }

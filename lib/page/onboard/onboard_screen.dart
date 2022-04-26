@@ -1,22 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:reading_book_4k/assets/app_string.dart';
 import 'package:reading_book_4k/page/onboard/onboard_bloc.dart';
 
 import '../../config/app_color.dart';
 
 class OnBoard extends StatelessWidget {
-  const OnBoard({Key? key}) : super(key: key);
+  final int initialIndex;
+  const OnBoard({Key? key, this.initialIndex = 0}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     OnBoardBloc bloc = OnBoardBloc();
+    bloc.init();
+    bloc.changeIndex(initialIndex);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: AppColor.primaryColor,
         elevation: 0,
         automaticallyImplyLeading: false,
         title: const Text(
-          'TỦ SÁCH CỦA EM',
+          AppString.yourBookShelf,
           style: TextStyle(
               color: Colors.black,
               fontWeight: FontWeight.w900,
@@ -43,19 +47,19 @@ class OnBoard extends StatelessWidget {
                 items: const [
                   BottomNavigationBarItem(
                     icon: FaIcon(FontAwesomeIcons.house),
-                    label: 'Home',
+                    label: AppString.home,
                   ),
                   BottomNavigationBarItem(
                     icon: FaIcon(FontAwesomeIcons.solidHeart),
-                    label: 'Favourite',
+                    label: AppString.favorite,
                   ),
                   BottomNavigationBarItem(
                     icon: FaIcon(FontAwesomeIcons.bookBookmark),
-                    label: 'Library',
+                    label: AppString.library2,
                   ),
                   BottomNavigationBarItem(
                     icon: FaIcon(FontAwesomeIcons.upload),
-                    label: 'On phone',
+                    label: AppString.onPhone,
                   ),
                 ],
                 backgroundColor: AppColor.primaryColor,

@@ -1,16 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:reading_book_4k/assets/app_dimen.dart';
+import 'package:reading_book_4k/assets/app_string.dart';
 import 'package:reading_book_4k/components/book_cell.dart';
 import 'package:reading_book_4k/config/app_color.dart';
+import 'package:reading_book_4k/data/titles.dart';
 import 'package:reading_book_4k/page/home/home_bloc.dart';
 import 'package:reading_book_4k/services/titles_service.dart';
 
-class HomeScreen extends StatelessWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+class HomeScreen extends StatefulWidget {
+  final ValueSetter<String> callToNav;
+  const HomeScreen({Key? key, required this.callToNav}) : super(key: key);
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  HomeBloc bloc = HomeBloc();
+
+  @override
+  void dispose() {
+    bloc.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    HomeBloc bloc = HomeBloc();
+    bloc.init();
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 30.0),
       child: SingleChildScrollView(
@@ -18,41 +34,11 @@ class HomeScreen extends StatelessWidget {
           children: [
             searchBar(),
             banner(),
-            stories('SÁCH ĐỌC GẦN ĐÂY', context, bloc),
-            stories('SÁCH YÊU THÍCH', context, bloc),
-            stories('THƯ VIỆN', context, bloc),
+            stories(AppString.library, context, bloc, widget.callToNav),
+            stories(AppString.favList, context, bloc, widget.callToNav),
           ],
         ),
       ),
-      // body: SingleChildScrollView(
-      //   child: Column(
-      //     children: [
-      //       ElevatedButton(
-      //         onPressed: () => bloc.pickFile(),
-      //         child: const Text('Pick'),
-      //       ),
-      //       ElevatedButton(
-      //         onPressed: () => bloc.play(),
-      //         child: const Text('play'),
-      //       ),
-      //       ElevatedButton(
-      //         onPressed: () => bloc.pause(),
-      //         child: const Text('pause'),
-      //       ),
-      //       StreamBuilder(
-      //         stream: bloc.text.stream,
-      //         builder: (context, snapshot) {
-      //           if (!snapshot.hasData) {
-      //             return const CircularProgressIndicator();
-      //           } else {
-      //             String text = snapshot.data.toString();
-      //             return Text(text);
-      //           }
-      //         },
-      //       )
-      //     ],
-      //   ),
-      // ),
     );
   }
 }
@@ -75,10 +61,10 @@ Widget searchBar() {
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 5.0),
             child: TextField(
-              style: const TextStyle(fontSize: 13.0),
+              style: const TextStyle(fontSize: AppDimen.textSizeSubtext),
               cursorColor: Colors.black,
               decoration: InputDecoration(
-                hintText: 'Search',
+                hintText: AppString.search,
                 fillColor: Colors.white,
                 filled: true,
                 focusedBorder: OutlineInputBorder(
@@ -115,7 +101,8 @@ Widget banner() {
   return Container();
 }
 
-Widget stories(String type, context, HomeBloc bloc) {
+Widget stories(
+    String type, context, HomeBloc bloc, ValueSetter<String> callToNav) {
   return Column(
     children: [
       Row(
@@ -135,15 +122,15 @@ Widget stories(String type, context, HomeBloc bloc) {
             child: Text(
               type,
               style:
-                  const TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+                  const TextStyle(fontSize: AppDimen.textSizeBody3, fontWeight: FontWeight.bold),
             ),
           ),
           TextButton(
-            onPressed: () {},
+            onPressed: () => callToNav(type),
             child: const Text(
-              'Xem tất cả',
+              AppString.viewAll,
               style: TextStyle(
-                  fontSize: 13,
+                  fontSize: AppDimen.textSizeSubtext,
                   color: Colors.black,
                   fontWeight: FontWeight.w300),
             ),
@@ -152,16 +139,48 @@ Widget stories(String type, context, HomeBloc bloc) {
       ),
       SizedBox(
         height: 150.0,
-        child: ListView(
-          scrollDirection: Axis.horizontal,
-          children: [
-            for (var title in TitleService.titles)
-              BookCell(
-                title: title,
-                onPressed: () => bloc.openStory(title.name),
+        child: type == AppString.library
+            ? ListView(
+                scrollDirection: Axis.horizontal,
+                children: [
+                  for (var title in TitleService.titles)
+                    BookCell(
+                      title: title,
+                      onPressed: () => bloc.openStory(title.name),
+                    ),
+                ],
+              )
+            : StreamBuilder(
+                stream: bloc.listFav,
+                builder: (_, snapshot) {
+                  if (!snapshot.hasData) {
+                    return Container();
+                  } else {
+                    var list = snapshot.data as List<Titles>;
+                    return list.isEmpty
+                        ? const Center(
+                            child: Text(
+                              AppString.emptyList,
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                  fontSize: AppDimen.textSizeBody1,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.grey),
+                            ),
+                          )
+                        : ListView(
+                            scrollDirection: Axis.horizontal,
+                            children: [
+                              for (var title in list)
+                                BookCell(
+                                  title: title,
+                                  onPressed: () => bloc.openStory(title.name),
+                                ),
+                            ],
+                          );
+                  }
+                },
               ),
-          ],
-        ),
       )
     ],
   );

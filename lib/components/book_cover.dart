@@ -6,12 +6,14 @@ import 'package:reading_book_4k/services/navigator_service.dart';
 
 class BookCover extends StatelessWidget {
   final Titles title;
-  const BookCover({Key? key, required this.title}) : super(key: key);
+  final String from;
+  const BookCover({Key? key, required this.title, required this.from}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap:()=> GetIt.I<NavigatorService>().pushed(AppRoute.readingScreen, argument: title.name),
+      onTap: () => GetIt.I<NavigatorService>()
+          .popAndPush(AppRoute.readingScreen, argument: ['', title.name, from]),
       child: Card(
         margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
         child: Column(
