@@ -33,7 +33,12 @@ class _ReadingScreenState extends State<ReadingScreen> {
     }
     return Scaffold(
       appBar: AppBar(
-        title: widget.name.isEmpty ? const Text(AppString.content) : Text(widget.name),
+        title: widget.name.isEmpty
+            ? const Text(
+                AppString.content,
+                style: TextStyle(fontStyle: FontStyle.italic),
+              )
+            : Text(widget.name),
         elevation: 0,
         actions: [
           StreamBuilder(
@@ -44,7 +49,7 @@ class _ReadingScreenState extends State<ReadingScreen> {
               } else {
                 return IconButton(
                   icon: const FaIcon(FontAwesomeIcons.font),
-                  onPressed: ()=>bloc.changeTextSize(context),
+                  onPressed: () => bloc.changeTextSize(context),
                 );
               }
             },
@@ -77,7 +82,7 @@ class _ReadingScreenState extends State<ReadingScreen> {
           icon: const FaIcon(FontAwesomeIcons.angleLeft),
           onPressed: () => bloc.backPress(widget.from),
         ),
-        backgroundColor: AppColor.primaryColor,
+        backgroundColor: Colors.white,
         foregroundColor: Colors.black,
       ),
       body: Column(
@@ -126,19 +131,22 @@ class _ReadingScreenState extends State<ReadingScreen> {
 }
 
 Widget bodyStory(String content, ReadingBloc bloc) {
-  return StreamBuilder(
-    stream: bloc.textSize.stream,
-    builder: (_, snapshot) {
-      if (!snapshot.hasData) {
-        return Container();
-      } else {
-        var size = snapshot.data as double;
-        return Text(
-          content,
-          style: TextStyle(color: Colors.black, fontSize: size),
-        );
-      }
-    },
+  return Padding(
+    padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+    child: StreamBuilder(
+      stream: bloc.textSize.stream,
+      builder: (_, snapshot) {
+        if (!snapshot.hasData) {
+          return Container();
+        } else {
+          var size = snapshot.data as double;
+          return Text(
+            content,
+            style: TextStyle(color: Colors.black, fontSize: size),
+          );
+        }
+      },
+    ),
   );
 }
 

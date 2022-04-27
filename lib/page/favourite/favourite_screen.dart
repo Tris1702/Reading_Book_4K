@@ -8,7 +8,6 @@ import 'package:reading_book_4k/page/favourite/favourite_bloc.dart';
 class FavouriteScreen extends StatelessWidget {
   const FavouriteScreen({Key? key}) : super(key: key);
 
-  
   @override
   Widget build(BuildContext context) {
     FavouriteBloc bloc = FavouriteBloc();
@@ -31,12 +30,16 @@ class FavouriteScreen extends StatelessWidget {
                         color: Colors.grey),
                   ),
                 )
-              : GridView.count(
-                  crossAxisCount: 3,
-                  childAspectRatio: 2 / 3,
-                  children: [
-                    for (var title in titles) BookCover(title: title, from: 'favorites'),
-                  ],
+              : Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                  child: GridView.count(
+                    crossAxisCount: 3,
+                    childAspectRatio: 2 / 3,
+                    children: [
+                      for (var title in titles)
+                        BookCover(title: title, from: 'favorites'),
+                    ],
+                  ),
                 );
         }
       },

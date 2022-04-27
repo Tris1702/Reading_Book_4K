@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:reading_book_4k/assets/app_string.dart';
 import 'package:reading_book_4k/page/onboard/onboard_bloc.dart';
+import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 
 import '../../config/app_color.dart';
 
@@ -16,7 +17,7 @@ class OnBoard extends StatelessWidget {
     bloc.changeIndex(initialIndex);
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: AppColor.primaryColor,
+        backgroundColor: Colors.white,
         elevation: 0,
         automaticallyImplyLeading: false,
         title: const Text(
@@ -43,30 +44,27 @@ class OnBoard extends StatelessWidget {
           if (!snapshot.hasData) {
             return Container();
           } else {
-            return BottomNavigationBar(
-                items: const [
-                  BottomNavigationBarItem(
-                    icon: FaIcon(FontAwesomeIcons.house),
-                    label: AppString.home,
+            return SalomonBottomBar(
+                items: [
+                  SalomonBottomBarItem(
+                    icon: const FaIcon(FontAwesomeIcons.house),
+                    title: const Text(AppString.home),
                   ),
-                  BottomNavigationBarItem(
-                    icon: FaIcon(FontAwesomeIcons.solidHeart),
-                    label: AppString.favorite,
+                  SalomonBottomBarItem(
+                    icon: const FaIcon(FontAwesomeIcons.solidHeart),
+                    title: const Text(AppString.favorite),
                   ),
-                  BottomNavigationBarItem(
-                    icon: FaIcon(FontAwesomeIcons.bookBookmark),
-                    label: AppString.library2,
+                  SalomonBottomBarItem(
+                    icon: const FaIcon(FontAwesomeIcons.bookBookmark),
+                    title: const Text(AppString.library2),
                   ),
-                  BottomNavigationBarItem(
-                    icon: FaIcon(FontAwesomeIcons.upload),
-                    label: AppString.onPhone,
+                  SalomonBottomBarItem(
+                    icon: const FaIcon(FontAwesomeIcons.upload),
+                    title: const Text(AppString.onPhone),
                   ),
                 ],
-                backgroundColor: AppColor.primaryColor,
-                type: BottomNavigationBarType.fixed,
-                showUnselectedLabels: false,
                 currentIndex: snapshot.data! as int,
-                selectedItemColor: Colors.black,
+                selectedItemColor: AppColor.selectedColor,
                 onTap: (index) => bloc.changeIndex(index)
                 // unselectedItemColor: Colors.white,
                 );

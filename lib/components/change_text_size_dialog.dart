@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:reading_book_4k/assets/app_dimen.dart';
 import 'package:reading_book_4k/assets/app_string.dart';
+import 'package:reading_book_4k/config/app_color.dart';
 
 class ChangeTextSizeDialog extends StatefulWidget {
   final ValueSetter<String> callback;
@@ -16,7 +17,13 @@ class ChangeTextSizeDialog extends StatefulWidget {
 class _ChangeTextSizeDialogState extends State<ChangeTextSizeDialog> {
   @override
   Widget build(BuildContext context) {
-    List<String> size = [AppString.smallest, AppString.small, AppString.medium, AppString.large, AppString.largest];
+    List<String> size = [
+      AppString.smallest,
+      AppString.small,
+      AppString.medium,
+      AppString.large,
+      AppString.largest
+    ];
     String _selected = size[4];
     if (widget.currentSize - AppDimen.textSizeSubtext < 0.001) {
       _selected = size[0];
@@ -36,6 +43,7 @@ class _ChangeTextSizeDialogState extends State<ChangeTextSizeDialog> {
           shrinkWrap: true,
           itemCount: 5,
           itemBuilder: (context, index) => RadioListTile(
+            activeColor: AppColor.selectedColor,
             title: Text(size[index]),
             onChanged: (value) {
               widget.callback(value as String);

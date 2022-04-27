@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:lottie/lottie.dart';
 import 'package:reading_book_4k/assets/app_dimen.dart';
 import 'package:reading_book_4k/assets/app_string.dart';
 import 'package:reading_book_4k/components/book_cell.dart';
@@ -33,7 +34,7 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           children: [
             searchBar(),
-            banner(),
+            banner(context),
             stories(AppString.library, context, bloc, widget.callToNav),
             stories(AppString.favList, context, bloc, widget.callToNav),
           ],
@@ -46,10 +47,9 @@ class _HomeScreenState extends State<HomeScreen> {
 Widget searchBar() {
   return Container(
     decoration: const BoxDecoration(
-      color: AppColor.primaryColor,
-      borderRadius: BorderRadius.only(
-        bottomLeft: Radius.circular(30.0),
-        bottomRight: Radius.circular(30.0),
+      color: AppColor.searchBarColor,
+      borderRadius: BorderRadius.all(
+        Radius.circular(30.0),
       ),
     ),
     child: Row(
@@ -64,6 +64,7 @@ Widget searchBar() {
               style: const TextStyle(fontSize: AppDimen.textSizeSubtext),
               cursorColor: Colors.black,
               decoration: InputDecoration(
+                isDense: true,
                 hintText: AppString.search,
                 fillColor: Colors.white,
                 filled: true,
@@ -83,6 +84,8 @@ Widget searchBar() {
         ),
         IconButton(
           onPressed: () {},
+          padding: EdgeInsets.zero,
+          constraints: const BoxConstraints(),
           icon: const FaIcon(
             FontAwesomeIcons.magnifyingGlass,
             color: Colors.black,
@@ -97,8 +100,15 @@ Widget searchBar() {
   );
 }
 
-Widget banner() {
-  return Container();
+Widget banner(BuildContext context) {
+  return SizedBox(
+    height: MediaQuery.of(context).size.width * 0.8,
+    width: MediaQuery.of(context).size.width * 0.8,
+    child: FittedBox(
+      child: LottieBuilder.asset('assets/gifs/banner_gif.json'),
+      fit: BoxFit.fill,
+    ),
+  );
 }
 
 Widget stories(
@@ -121,8 +131,9 @@ Widget stories(
           Expanded(
             child: Text(
               type,
-              style:
-                  const TextStyle(fontSize: AppDimen.textSizeBody3, fontWeight: FontWeight.bold),
+              style: const TextStyle(
+                  fontSize: AppDimen.textSizeBody3,
+                  fontWeight: FontWeight.bold),
             ),
           ),
           TextButton(

@@ -15,31 +15,41 @@ class OnphoneScreen extends StatelessWidget {
     OnphoneBloc bloc = OnphoneBloc();
 
     return Center(
-      child: ElevatedButton(
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: const [
-            FaIcon(
-              FontAwesomeIcons.upload,
-              color: Colors.black,
-            ),
-            SizedBox(
-              width: 10.0,
-            ),
-            Text(
-              AppString.uploadFile,
-              style: TextStyle(color: Colors.black),
-            ),
-          ],
-        ),
-        onPressed: () => bloc.pickFile(),
-        style: ElevatedButton.styleFrom(
-          primary: AppColor.primaryColor,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(50.0),
+      child: Column(children: [
+        SizedBox(
+          height: MediaQuery.of(context).size.width * 0.8,
+          width: MediaQuery.of(context).size.width * 0.8,
+          child: const FaIcon(
+            FontAwesomeIcons.boxesPacking,
+            color: AppColor.backgroundLinearProgressBar,
           ),
         ),
-      ),
+        ElevatedButton(
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: const [
+              FaIcon(
+                FontAwesomeIcons.upload,
+                color: Colors.black,
+              ),
+              SizedBox(
+                width: 10.0,
+              ),
+              Text(
+                AppString.uploadFile,
+                style: TextStyle(color: Colors.black),
+              ),
+            ],
+          ),
+          onPressed: () => bloc.pickFile(),
+          style: ElevatedButton.styleFrom(
+            primary: AppColor.primaryColor,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(50.0),
+            ),
+          ),
+        ),
+      ]),
     );
   }
 }
