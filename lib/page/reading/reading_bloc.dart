@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:reading_book_4k/assets/app_dimen.dart';
@@ -39,16 +40,18 @@ class ReadingBloc extends BlocBase {
     await flutterTts.setLanguage("vi-VN");
     await flutterTts
         .setVoice({"name": "vi-vn-x-vif-network", "locale": "vi-VN"});
+    await flutterTts.setSpeechRate(Platform.isAndroid ? 0.5 : 0.395);
     log('splitting');
 
     List<String> list =
         (text.isNotEmpty) ? text.split('.') : stories.value!.content.split('.');
     log('splitted');
+
     flutterTts.setQueueMode(1);
+
     indexText.sink.add((progress.value * list.length).floor());
     var i = indexText.value;
     await flutterTts.speak(list[i]);
-    // await _speak(sentence);
     flutterTts.setCompletionHandler(
       () async {
         if (i < list.length - 1) {

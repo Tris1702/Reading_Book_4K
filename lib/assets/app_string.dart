@@ -21,4 +21,5 @@ class AppString {
   static const opening = 'TRI THỨC\nlà\nSỨC MẠNH';
   static const readNow = 'Đọc ngay';
   static const search = 'Tìm kiếm';
+  static const uploading = 'Đang tải...';
 }
