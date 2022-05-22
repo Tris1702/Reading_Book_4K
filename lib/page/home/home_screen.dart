@@ -97,12 +97,12 @@ Widget banner(BuildContext context, AnimationController _controller) {
       child: LottieBuilder.asset(
         'assets/gifs/banner_gif.json',
         controller: _controller,
-        onLoaded: (composition) {
-          _controller
-            ..duration = composition.duration
-            ..forward()
-            ..repeat();
-        },
+        // onLoaded: (composition) {
+        //   _controller
+        //     ..duration = composition.duration
+        //     ..forward()
+        //     ..repeat();
+        // },
       ),
       fit: BoxFit.fill,
     ),
