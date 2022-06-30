@@ -20,7 +20,7 @@ class AppRoute {
             BuildContext context,
           ) {
             final arguments = routeSettings.arguments as List<String>;
-            return ReadingScreen(content: arguments[0], name: arguments[1], from: arguments[2]);
+            return ReadingScreen(content: arguments[0], id: arguments[1], name: arguments[2]);
           },
         );
       default:

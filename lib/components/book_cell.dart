@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:reading_book_4k/assets/app_dimen.dart';
 import 'package:reading_book_4k/assets/app_string.dart';
@@ -54,7 +56,7 @@ class BookCell extends StatelessWidget {
                   borderRadius: BorderRadius.circular(10.0),
                   image: DecorationImage(
                     fit: BoxFit.fill,
-                    image: AssetImage(title.path),
+                    image: AssetImage(title.thumb),
                   ),
                 ),
               ),
@@ -70,7 +72,7 @@ class BookCell extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    title.name,
+                    title.title,
                     style: const TextStyle(
                       fontSize: AppDimen.textSizeSubtext,
                       color: Colors.black,

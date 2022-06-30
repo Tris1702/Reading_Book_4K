@@ -22,7 +22,12 @@ class ReadingBloc extends BlocBase {
   }
 
   @override
-  void init() {}
+  void init() async {
+    await flutterTts.setLanguage("vi-VN");
+    await flutterTts
+        .setVoice({"name": "vi-vn-x-vif-network", "locale": "vi-VN"});
+    await flutterTts.setSpeechRate(Platform.isAndroid ? 0.5 : 0.395);
+  }
 
   BehaviorSubject<bool> isFav = BehaviorSubject();
 
@@ -37,15 +42,8 @@ class ReadingBloc extends BlocBase {
   final flutterTts = FlutterTts();
   Future<void> play() async {
     playing.sink.add(true);
-    await flutterTts.setLanguage("vi-VN");
-    await flutterTts
-        .setVoice({"name": "vi-vn-x-vif-network", "locale": "vi-VN"});
-    await flutterTts.setSpeechRate(Platform.isAndroid ? 0.5 : 0.395);
-    log('splitting');
-
     List<String> list =
-        (text.isNotEmpty) ? text.split('.') : stories.value!.content.split('.');
-    log('splitted');
+        (text.isNotEmpty) ? text.split(RegExp(r'\.|\n')) : stories.value!.content.split(RegExp(r'\.|\n'));
 
     flutterTts.setQueueMode(1);
 
@@ -81,33 +79,23 @@ class ReadingBloc extends BlocBase {
     }
   }
 
-  void getStoryInfo(String name) async {
-    stories.sink.add(await db.getStoryByName(name));
-    isFav.sink.add(await fav.isFavourite(name));
+  void getStoryInfo(String id) async {
+    stories.sink.add(await db.getStoryById(id));
+    isFav.sink.add(await db.isFav(id));
   }
 
-  void addToFav(String name) {
-    fav.addStory(name);
+  void addToFav(String id) {
+    db.addFav(id);
     isFav.sink.add(true);
   }
 
-  void removeFromFav(String name) {
-    fav.deleteStory(name);
+  void removeFromFav(String id) {
+    db.deleteFav(id);
     isFav.sink.add(false);
   }
 
-  void backPress(String from) {
-    var argument = 0;
-    if (from == 'home') {
-      argument = 0;
-    } else if (from == 'favorites') {
-      argument = 1;
-    } else if (from == 'onphone') {
-      argument = 3;
-    } else {
-      argument = 2;
-    }
-    navigator.popAndPush(AppRoute.onboard, argument: argument);
+  void backPress() {
+    navigator.pop();
   }
 
   void changeTextSize(BuildContext context) {

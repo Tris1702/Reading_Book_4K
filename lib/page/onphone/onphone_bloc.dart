@@ -41,7 +41,8 @@ class OnphoneBloc extends BlocBase {
           ),
         );
         PDFDoc doc = await PDFDoc.fromPath(path);
-        navigator.popAndPush(AppRoute.readingScreen,
+        navigator.pop();
+        navigator.pushed(AppRoute.readingScreen,
             argument: [await doc.text, '', 'onphone']);
       }
     } else {

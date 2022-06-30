@@ -9,7 +9,6 @@ import 'package:reading_book_4k/components/book_cell.dart';
 import 'package:reading_book_4k/config/app_color.dart';
 import 'package:reading_book_4k/data/titles.dart';
 import 'package:reading_book_4k/page/home/home_bloc.dart';
-import 'package:reading_book_4k/services/titles_service.dart';
 
 class HomeScreen extends StatefulWidget {
   final ValueSetter<String> callToNav;
@@ -81,11 +80,10 @@ Widget searchBar(HomeBloc bloc) {
     itemBuilder: (context, Titles suggestion) {
       return ListTile(
         leading: const FaIcon(FontAwesomeIcons.book),
-        title: Text(suggestion.name),
+        title: Text(suggestion.title),
       );
     },
-    onSuggestionSelected: (Titles suggestion) =>
-        bloc.openStory(suggestion.name),
+    onSuggestionSelected: (Titles suggestion) => bloc.openStory(suggestion),
   );
 }
 
@@ -94,15 +92,9 @@ Widget banner(BuildContext context, AnimationController _controller) {
     height: MediaQuery.of(context).size.width * 0.8,
     width: MediaQuery.of(context).size.width * 0.8,
     child: FittedBox(
-      child: LottieBuilder.asset(
+      child: Lottie.asset(
         'assets/gifs/banner_gif.json',
         controller: _controller,
-        // onLoaded: (composition) {
-        //   _controller
-        //     ..duration = composition.duration
-        //     ..forward()
-        //     ..repeat();
-        // },
       ),
       fit: BoxFit.fill,
     ),
@@ -149,15 +141,25 @@ Widget stories(
       SizedBox(
         height: 150.0,
         child: type == AppString.library
-            ? ListView(
-                scrollDirection: Axis.horizontal,
-                children: [
-                  for (var title in TitleService.titles)
-                    BookCell(
-                      title: title,
-                      onPressed: () => bloc.openStory(title.name),
-                    ),
-                ],
+            ? StreamBuilder(
+                stream: bloc.titles.stream,
+                builder: (_, snapshot) {
+                  if (!snapshot.hasData) {
+                    return const Center(child: CircularProgressIndicator(color: AppColor.primaryColor,));
+                  } else {
+                    List<Titles> list = snapshot.data as List<Titles>;
+                    return ListView(
+                      scrollDirection: Axis.horizontal,
+                      children: [
+                        for (var title in list)
+                          BookCell(
+                            title: title,
+                            onPressed: () => bloc.openStory(title),
+                          ),
+                      ],
+                    );
+                  }
+                },
               )
             : StreamBuilder(
                 stream: bloc.listFav,
@@ -183,7 +185,7 @@ Widget stories(
                               for (var title in list)
                                 BookCell(
                                   title: title,
-                                  onPressed: () => bloc.openStory(title.name),
+                                  onPressed: () => bloc.openStory(title),
                                 ),
                             ],
                           );

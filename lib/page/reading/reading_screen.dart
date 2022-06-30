@@ -7,10 +7,10 @@ import 'package:reading_book_4k/page/reading/reading_bloc.dart';
 
 class ReadingScreen extends StatefulWidget {
   final String content;
+  final String id;
   final String name;
-  final String from;
   const ReadingScreen(
-      {Key? key, required this.content, required this.name, required this.from})
+      {Key? key, required this.content, required this.id, required this.name})
       : super(key: key);
   @override
   State<ReadingScreen> createState() => _ReadingScreenState();
@@ -27,7 +27,7 @@ class _ReadingScreenState extends State<ReadingScreen> {
   @override
   Widget build(BuildContext context) {
     if (widget.content.isEmpty) {
-      bloc.getStoryInfo(widget.name);
+      bloc.getStoryInfo(widget.id);
     } else {
       bloc.text = widget.content;
     }
@@ -70,8 +70,8 @@ class _ReadingScreenState extends State<ReadingScreen> {
                         ),
                   onPressed: () {
                     isFav
-                        ? bloc.removeFromFav(widget.name)
-                        : bloc.addToFav(widget.name);
+                        ? bloc.removeFromFav(widget.id)
+                        : bloc.addToFav(widget.id);
                   },
                 );
               }
@@ -80,7 +80,7 @@ class _ReadingScreenState extends State<ReadingScreen> {
         ],
         leading: IconButton(
           icon: const FaIcon(FontAwesomeIcons.angleLeft),
-          onPressed: () => bloc.backPress(widget.from),
+          onPressed: () => bloc.backPress(),
         ),
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,

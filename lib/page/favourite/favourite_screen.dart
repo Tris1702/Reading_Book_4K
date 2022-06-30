@@ -5,9 +5,14 @@ import 'package:reading_book_4k/components/book_cover.dart';
 import 'package:reading_book_4k/data/titles.dart';
 import 'package:reading_book_4k/page/favourite/favourite_bloc.dart';
 
-class FavouriteScreen extends StatelessWidget {
+class FavouriteScreen extends StatefulWidget {
   const FavouriteScreen({Key? key}) : super(key: key);
 
+  @override
+  State<FavouriteScreen> createState() => _FavouriteScreenState();
+}
+
+class _FavouriteScreenState extends State<FavouriteScreen> {
   @override
   Widget build(BuildContext context) {
     FavouriteBloc bloc = FavouriteBloc();
@@ -37,7 +42,11 @@ class FavouriteScreen extends StatelessWidget {
                     childAspectRatio: 2 / 3,
                     children: [
                       for (var title in titles)
-                        BookCover(title: title, from: 'favorites'),
+                        BookCover(
+                          title: title,
+                          from: 'favorites',
+                          onPressed: () => bloc.openStory(title),
+                        ),
                     ],
                   ),
                 );

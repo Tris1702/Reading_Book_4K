@@ -6,6 +6,8 @@ import 'package:reading_book_4k/data/stories.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
+import '../data/titles.dart';
+
 class DatabaseService {
   late Database database;
   Future<Database> getDB() async {
@@ -34,25 +36,51 @@ class DatabaseService {
     return await openDatabase(path);
   }
 
-  Future<List<Stories>> getStories() async {
-    final List<Map<String, dynamic>> maps = await database.query('stories');
+  Future<List<Titles>> getTitles() async {
+    final List<Map<String, dynamic>> maps = await database.query('titles');
     return List.generate(maps.length, (index) {
-      return Stories(
-        name: maps[index]['name'],
-        content: maps[index]['content'],
-      );
+      return Titles.fromMap(maps[index]);
     });
   }
 
-  Future<Stories> getStoryByName(String name) async {
-    String query = 'SELECT * FROM stories WHERE name = \'$name\'';
+  Future<List<Titles>> getFav() async {
+    final List<Map<String, dynamic>> maps = await database.query('titles');
+    List<Titles> allList = List.generate(maps.length, (index) {
+      return Titles(
+          id: maps[index]['id'],
+          title: maps[index]['title'],
+          thumb: maps[index]['thumb'],
+          isFav: maps[index]['isFav']);
+    });
+    return allList.where((title) => title.isFav == 1).toList();
+  }
+
+  Future<void> addFav(String id) async {
+    String sql = 'UPDATE titles SET isFav = 1 WHERE id = \'$id\'';
+    await database.rawUpdate(sql);
+  }
+
+  Future<void> deleteFav(String id) async {
+    String sql = 'UPDATE titles SET isFav = 0 WHERE id = \'$id\'';
+    await database.rawDelete(sql);
+  }
+
+  Future<bool> isFav(String id) async {
+    String sql = 'SELECT isFav from titles WHERE id = \'$id\'';
+    final List<Map<String, dynamic>> maps = await database.rawQuery(sql);
+    log(maps[0].toString());
+    return (maps[0]['isFav'] as int) == 1;
+  }
+
+  Future<Stories> getStoryById(String id) async {
+    String query = 'SELECT * FROM stories WHERE id = \'$id\'';
     log(query);
     final List<Map<String, dynamic>> maps = await database.rawQuery(query);
     // print(maps);
     return Stories(
+      id: maps[0]['id'],
       name: maps[0]['name'],
       content: maps[0]['content'],
     );
   }
-
 }

@@ -1,6 +1,5 @@
 import 'package:reading_book_4k/base/bloc_base.dart';
 import 'package:reading_book_4k/config/app_route.dart';
-import 'package:reading_book_4k/services/titles_service.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../../data/titles.dart';
@@ -14,19 +13,22 @@ class HomeBloc extends BlocBase {
   @override
   void init() async {
     listFav.sink.add(await getFav());
+    titles.sink.add(await db.getTitles());
   }
 
   BehaviorSubject<List<Titles>> listFav =
       BehaviorSubject.seeded(List<Titles>.empty(growable: true));
-  void openStory(String title) {
-    navigator.popAndPush(AppRoute.readingScreen, argument: ['', title, 'home']);
+  BehaviorSubject<List<Titles>> titles = BehaviorSubject();
+  void openStory(Titles title) async {
+    await navigator.pushed(AppRoute.readingScreen, argument: ['', title.id, title.title]);
+    listFav.sink.add(await getFav());
   }
 
   Future<List<Titles>> getFav() async {
-    return await fav.getStories();
+    return await db.getFav();
   }
 
   Future<List<Titles>> getSuggestions(String pattern) async {
-    return TitleService.titles.where((element) => element.name.contains(pattern)).toList();
+    return titles.value.where((element) => element.title.contains(pattern)).toList();
   }
 }

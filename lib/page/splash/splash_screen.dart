@@ -29,7 +29,7 @@ class SplashScreen extends StatelessWidget {
                   fontSize: AppDimen.textSizeHeading2,
                   fontFamily: 'Baloo Tamma 2',
                   fontWeight: FontWeight.w900)),
-          LottieBuilder.asset('assets/gifs/splash_gif.json'),
+          Lottie.asset('assets/gifs/splash_gif.json'),
         ],
       ),
     );

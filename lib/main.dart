@@ -3,7 +3,6 @@ import 'package:get_it/get_it.dart';
 import 'package:reading_book_4k/base/setup_service_locator.dart';
 import 'package:reading_book_4k/services/app_shared_preference.dart';
 import 'package:reading_book_4k/services/database_service.dart';
-import 'package:reading_book_4k/services/favorites_service.dart';
 import 'package:reading_book_4k/services/navigator_service.dart';
 
 import 'config/app_route.dart';
@@ -13,8 +12,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   setUpServiceLocator();
   await GetIt.I<AppSharedPreference>().getAppSharedPreference();
-  await GetIt.I<FavoriteDatabase>().getDB();
-  await GetIt.I<DatabaseService>().getDB();
+  GetIt.I<DatabaseService>().getDB();
   runApp(const RApp());
 }
 
