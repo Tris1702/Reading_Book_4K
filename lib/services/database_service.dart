@@ -79,7 +79,6 @@ class DatabaseService {
     // print(maps);
     return Stories(
       id: maps[0]['id'],
-      name: maps[0]['name'],
       content: maps[0]['content'],
     );
   }

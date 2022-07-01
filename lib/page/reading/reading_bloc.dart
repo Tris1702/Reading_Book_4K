@@ -22,11 +22,8 @@ class ReadingBloc extends BlocBase {
   }
 
   @override
-  void init() async {
-    await flutterTts.setLanguage("vi-VN");
-    await flutterTts
-        .setVoice({"name": "vi-vn-x-vif-network", "locale": "vi-VN"});
-    await flutterTts.setSpeechRate(Platform.isAndroid ? 0.5 : 0.395);
+  void init() {
+    
   }
 
   BehaviorSubject<bool> isFav = BehaviorSubject();
@@ -41,6 +38,10 @@ class ReadingBloc extends BlocBase {
   String text = "";
   final flutterTts = FlutterTts();
   Future<void> play() async {
+    await flutterTts.setLanguage("vi-VN");
+    await flutterTts
+        .setVoice({"name": "vi-vn-x-vif-network", "locale": "vi-VN"});
+    await flutterTts.setSpeechRate(Platform.isAndroid ? 0.5 : 0.395);
     playing.sink.add(true);
     List<String> list =
         (text.isNotEmpty) ? text.split(RegExp(r'\.|\n')) : stories.value!.content.split(RegExp(r'\.|\n'));
