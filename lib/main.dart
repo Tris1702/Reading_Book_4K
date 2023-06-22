@@ -2,17 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:reading_book_4k/base/setup_service_locator.dart';
 import 'package:reading_book_4k/services/app_shared_preference.dart';
-import 'package:reading_book_4k/services/database_service.dart';
 import 'package:reading_book_4k/services/navigator_service.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
 import 'config/app_route.dart';
 import 'page/splash/splash_screen.dart';
 
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   setUpServiceLocator();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,);
   await GetIt.I<AppSharedPreference>().getAppSharedPreference();
-  GetIt.I<DatabaseService>().getDB();
   runApp(const RApp());
 }
 

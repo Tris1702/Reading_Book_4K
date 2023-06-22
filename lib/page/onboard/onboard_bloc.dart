@@ -8,6 +8,8 @@ import 'package:reading_book_4k/page/library/library_screen.dart';
 import 'package:reading_book_4k/page/onphone/onphone_screen.dart';
 import 'package:rxdart/rxdart.dart';
 
+import '../profile/profile_screen.dart';
+
 class OnBoardBloc extends BlocBase {
   @override
   void dispose() {
@@ -30,7 +32,8 @@ class OnBoardBloc extends BlocBase {
       ),
       const FavouriteScreen(),
       const LibraryScreen(),
-      const OnphoneScreen()
+      const OnphoneScreen(),
+      const ProfileScreen(),
     ];
   }
 

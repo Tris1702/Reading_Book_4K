@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "776378880146",
+    "project_id": "reading-book-1aa02",
+    "storage_bucket": "reading-book-1aa02.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:776378880146:android:f48031d438a58d302cd64b",
+        "android_client_info": {
+          "package_name": "com.example.reading_book_4k"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "776378880146-nnl0qh5ma6musbngjnjfo8m2p4ksj6h9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAsXav00HsHqcOvbQeNRZTu3jXuHRgfYhY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "776378880146-nnl0qh5ma6musbngjnjfo8m2p4ksj6h9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

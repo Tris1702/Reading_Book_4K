@@ -1,15 +1,14 @@
-import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:reading_book_4k/assets/app_dimen.dart';
 import 'package:reading_book_4k/assets/app_string.dart';
 import 'package:reading_book_4k/config/app_color.dart';
-import 'package:reading_book_4k/data/titles.dart';
+import 'package:reading_book_4k/model/story.dart';
 
 class BookCell extends StatelessWidget {
-  final Titles title;
+  final Story story;
   final VoidCallback onPressed;
-  const BookCell({Key? key, required this.title, required this.onPressed})
+  const BookCell({Key? key, required this.story, required this.onPressed})
       : super(key: key);
 
   @override
@@ -56,7 +55,7 @@ class BookCell extends StatelessWidget {
                   borderRadius: BorderRadius.circular(10.0),
                   image: DecorationImage(
                     fit: BoxFit.fill,
-                    image: AssetImage(title.thumb),
+                    image: NetworkImage(story.coverLink),
                   ),
                 ),
               ),
@@ -72,7 +71,7 @@ class BookCell extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    title.title,
+                    story.title,
                     style: const TextStyle(
                       fontSize: AppDimen.textSizeSubtext,
                       color: Colors.black,
@@ -98,7 +97,7 @@ class BookCell extends StatelessWidget {
             child: ElevatedButton(
               onPressed: onPressed,
               style: ElevatedButton.styleFrom(
-                primary: AppColor.primaryColor,
+                backgroundColor: AppColor.primaryColor,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(50.0),
                 ),

@@ -7,7 +7,7 @@ import 'package:reading_book_4k/assets/app_dimen.dart';
 import 'package:reading_book_4k/assets/app_string.dart';
 import 'package:reading_book_4k/components/book_cell.dart';
 import 'package:reading_book_4k/config/app_color.dart';
-import 'package:reading_book_4k/data/titles.dart';
+import 'package:reading_book_4k/model/story.dart';
 import 'package:reading_book_4k/page/home/home_bloc.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -37,16 +37,21 @@ class _HomeScreenState extends State<HomeScreen>
   @override
   Widget build(BuildContext context) {
     bloc.init();
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 30.0),
-        child: Column(
-          children: [
-            searchBar(bloc),
-            banner(context, _controller),
-            stories(AppString.library, context, bloc, widget.callToNav),
-            stories(AppString.favList, context, bloc, widget.callToNav),
-          ],
+    return RefreshIndicator(
+      onRefresh: () async {
+        bloc.init();
+      },
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 30.0),
+          child: Column(
+            children: [
+              searchBar(bloc),
+              banner(context, _controller),
+              stories(AppString.library, context, bloc, widget.callToNav),
+              stories(AppString.favList, context, bloc, widget.callToNav),
+            ],
+          ),
         ),
       ),
     );
@@ -77,13 +82,13 @@ Widget searchBar(HomeBloc bloc) {
     suggestionsCallback: (pattern) async {
       return await bloc.getSuggestions(pattern);
     },
-    itemBuilder: (context, Titles suggestion) {
+    itemBuilder: (context, Story suggestion) {
       return ListTile(
         leading: const FaIcon(FontAwesomeIcons.book),
         title: Text(suggestion.title),
       );
     },
-    onSuggestionSelected: (Titles suggestion) => bloc.openStory(suggestion),
+    onSuggestionSelected: (Story suggestion) => bloc.openStory(suggestion),
   );
 }
 
@@ -142,19 +147,19 @@ Widget stories(
         height: 150.0,
         child: type == AppString.library
             ? StreamBuilder(
-                stream: bloc.titles.stream,
+                stream: bloc.stories.stream,
                 builder: (_, snapshot) {
                   if (!snapshot.hasData) {
                     return const Center(child: CircularProgressIndicator(color: AppColor.primaryColor,));
                   } else {
-                    List<Titles> list = snapshot.data as List<Titles>;
+                    List<Story> list = snapshot.data as List<Story>;
                     return ListView(
                       scrollDirection: Axis.horizontal,
                       children: [
-                        for (var title in list)
+                        for (var story in list)
                           BookCell(
-                            title: title,
-                            onPressed: () => bloc.openStory(title),
+                            story: story,
+                            onPressed: () => bloc.openStory(story),
                           ),
                       ],
                     );
@@ -167,7 +172,7 @@ Widget stories(
                   if (!snapshot.hasData) {
                     return Container();
                   } else {
-                    var list = snapshot.data as List<Titles>;
+                    var list = snapshot.data as List<Story>;
                     return list.isEmpty
                         ? const Center(
                             child: Text(
@@ -182,10 +187,10 @@ Widget stories(
                         : ListView(
                             scrollDirection: Axis.horizontal,
                             children: [
-                              for (var title in list)
+                              for (var story in list)
                                 BookCell(
-                                  title: title,
-                                  onPressed: () => bloc.openStory(title),
+                                  story: story,
+                                  onPressed: () => bloc.openStory(story),
                                 ),
                             ],
                           );

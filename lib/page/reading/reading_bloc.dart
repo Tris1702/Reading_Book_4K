@@ -1,13 +1,22 @@
-import 'dart:developer';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:get_it/get_it.dart';
 import 'package:reading_book_4k/assets/app_dimen.dart';
 import 'package:reading_book_4k/base/bloc_base.dart';
 import 'package:reading_book_4k/components/change_text_size_dialog.dart';
 import 'package:reading_book_4k/config/app_route.dart';
-import 'package:reading_book_4k/data/stories.dart';
+import 'package:reading_book_4k/model/story.dart';
+import 'package:reading_book_4k/repository/story/story_repository.dart';
+import 'package:reading_book_4k/repository/story/story_repository_impl.dart';
+import 'package:reading_book_4k/repository/user/user_repository.dart';
+import 'package:reading_book_4k/repository/user/user_repository_impl.dart';
+import 'package:reading_book_4k/services/app_shared_preference.dart';
 import 'package:rxdart/rxdart.dart';
+
+import '../../assets/app_string.dart';
+import '../../model/author.dart';
 
 class ReadingBloc extends BlocBase {
   @override
@@ -26,15 +35,24 @@ class ReadingBloc extends BlocBase {
     
   }
 
-  BehaviorSubject<bool> isFav = BehaviorSubject();
+  StoryRepository repo = StoryRepositoryImpl();
+  UserRepository userRepository = UserRepositoryImpl();
 
+  BehaviorSubject<bool> isFav = BehaviorSubject();
   BehaviorSubject<bool> playing = BehaviorSubject.seeded(false);
-  BehaviorSubject<Stories?> stories = BehaviorSubject();
+  BehaviorSubject<Story?> stories = BehaviorSubject();
+  BehaviorSubject<bool> loading = BehaviorSubject();
   BehaviorSubject<double> progress = BehaviorSubject.seeded(0.0);
+  BehaviorSubject<bool> allowDelete = BehaviorSubject.seeded(false);
+  BehaviorSubject<bool> allowUpdate = BehaviorSubject.seeded(false);
+  BehaviorSubject<int> speed = BehaviorSubject.seeded(1);
   BehaviorSubject<double> textSize =
       BehaviorSubject.seeded(AppDimen.textSizeBody2);
-
   BehaviorSubject<int> indexText = BehaviorSubject.seeded(0);
+  BehaviorSubject<String>authorName = BehaviorSubject();
+
+  final pref = GetIt.I<AppSharedPreference>();
+
   String text = "";
   final flutterTts = FlutterTts();
   Future<void> play() async {
@@ -81,17 +99,34 @@ class ReadingBloc extends BlocBase {
   }
 
   void getStoryInfo(String id) async {
-    stories.sink.add(await db.getStoryById(id));
-    isFav.sink.add(await db.isFav(id));
+    stories.sink.add(await repo.getStoryById(id));
+    isFav.sink.add(await repo.isFav(id));
+    authorName.sink.add((await repo.getAuthor(id))?.name ?? AppString.unknown);
   }
 
-  void addToFav(String id) {
-    db.addFav(id);
+  void addToFav(Story story) async {
+    if (pref.getString('authorId') == null) {
+      Fluttertoast.showToast(
+        msg: AppString.needLogin,
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+      );
+      return;
+    }
+    await repo.addToFav(story);
     isFav.sink.add(true);
   }
 
-  void removeFromFav(String id) {
-    db.deleteFav(id);
+  void removeFromFav(Story story) async {
+    if (pref.getString('authorId') == null) {
+      Fluttertoast.showToast(
+        msg: AppString.needLogin,
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+      );
+      return;
+    }
+    await repo.deleteFromFav(story);
     isFav.sink.add(false);
   }
 
@@ -126,5 +161,62 @@ class ReadingBloc extends BlocBase {
         currentSize: textSize.value,
       ),
     );
+  }
+
+  void getAccess(String storyId) async {
+    allowDelete.sink.add(await repo.getAccess(storyId));
+    allowUpdate.sink.add(await repo.getAccess(storyId));
+  }
+
+  void delete(Story story) async {
+    loading.sink.add(true);
+    final result = await repo.deleteStories(story);
+    if (result) {
+      Fluttertoast.showToast(
+        msg: AppString.success,
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+      );
+      Future.delayed(const Duration(milliseconds: 500)).then((value) => back());
+    } else {
+      Fluttertoast.showToast(
+        msg: AppString.failure,
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+      );
+    }
+    loading.sink.add(false);
+  }
+
+  void back() {
+    navigator.pop();
+  }
+
+  void openUpdateStory(String storyId) async {
+    await navigator.pushed(AppRoute.updateStory, argument: [storyId]);
+    getStoryInfo(storyId);
+  }
+
+  void changeSpeed() async {
+    switch (speed.value) {
+      case 1:
+        speed.sink.add(2);
+        await pause();
+        await flutterTts.setSpeechRate(2.0);
+        await play();
+        break;
+      case 2:
+        speed.sink.add(0);
+        await pause();
+        await flutterTts.setSpeechRate(0.5);
+        await play();
+        break;
+      case 0:
+        speed.sink.add(1);
+        await pause();
+        await flutterTts.setSpeechRate(1);
+        await play();
+        break;
+    }
   }
 }

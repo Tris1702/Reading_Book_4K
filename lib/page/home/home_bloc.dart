@@ -1,34 +1,40 @@
 import 'package:reading_book_4k/base/bloc_base.dart';
 import 'package:reading_book_4k/config/app_route.dart';
+import 'package:reading_book_4k/model/story.dart';
+import 'package:reading_book_4k/repository/story/story_repository.dart';
+import 'package:reading_book_4k/repository/story/story_repository_impl.dart';
 import 'package:rxdart/rxdart.dart';
 
-import '../../data/titles.dart';
-
 class HomeBloc extends BlocBase {
+
+  StoryRepository repo = StoryRepositoryImpl();
+
   @override
   void dispose() {
     listFav.close();
+    stories.close();
   }
 
   @override
   void init() async {
     listFav.sink.add(await getFav());
-    titles.sink.add(await db.getTitles());
+    stories.sink.add(await repo.getAllStories());
   }
 
-  BehaviorSubject<List<Titles>> listFav =
-      BehaviorSubject.seeded(List<Titles>.empty(growable: true));
-  BehaviorSubject<List<Titles>> titles = BehaviorSubject();
-  void openStory(Titles title) async {
-    await navigator.pushed(AppRoute.readingScreen, argument: ['', title.id, title.title]);
+  BehaviorSubject<List<Story>> listFav =
+      BehaviorSubject.seeded(List<Story>.empty(growable: true));
+  BehaviorSubject<List<Story>> stories = BehaviorSubject();
+
+  void openStory(Story story) async {
+    await navigator.pushed(AppRoute.readingScreen, argument: [story]);
     listFav.sink.add(await getFav());
   }
 
-  Future<List<Titles>> getFav() async {
-    return await db.getFav();
+  Future<List<Story>> getFav() async {
+    return await repo.getFavStories();
   }
 
-  Future<List<Titles>> getSuggestions(String pattern) async {
-    return titles.value.where((element) => element.title.contains(pattern)).toList();
+  Future<List<Story>> getSuggestions(String pattern) async {
+    return stories.value.where((element) => element.title.contains(pattern)).toList();
   }
 }

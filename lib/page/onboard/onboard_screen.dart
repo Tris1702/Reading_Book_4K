@@ -62,6 +62,9 @@ class OnBoard extends StatelessWidget {
                     icon: const FaIcon(FontAwesomeIcons.upload),
                     title: const Text(AppString.onPhone),
                   ),
+                  SalomonBottomBarItem(
+                    icon: const FaIcon(FontAwesomeIcons.person), 
+                    title: const Text(AppString.profile))
                 ],
                 currentIndex: snapshot.data! as int,
                 selectedItemColor: AppColor.selectedColor,

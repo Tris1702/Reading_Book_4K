@@ -2,15 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:reading_book_4k/assets/app_string.dart';
 import 'package:reading_book_4k/config/app_color.dart';
-import 'package:reading_book_4k/data/stories.dart';
+import 'package:reading_book_4k/model/story.dart';
 import 'package:reading_book_4k/page/reading/reading_bloc.dart';
 
 class ReadingScreen extends StatefulWidget {
-  final String content;
-  final String id;
-  final String name;
+  final Story story;
   const ReadingScreen(
-      {Key? key, required this.content, required this.id, required this.name})
+      {Key? key, required this.story})
       : super(key: key);
   @override
   State<ReadingScreen> createState() => _ReadingScreenState();
@@ -26,19 +24,23 @@ class _ReadingScreenState extends State<ReadingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.content.isEmpty) {
-      bloc.getStoryInfo(widget.id);
-    } else {
-      bloc.text = widget.content;
-    }
+    bloc.getAccess(widget.story.id!);
+    bloc.getStoryInfo(widget.story.id!);
     return Scaffold(
       appBar: AppBar(
-        title: widget.name.isEmpty
-            ? const Text(
-                AppString.content,
-                style: TextStyle(fontStyle: FontStyle.italic),
-              )
-            : Text(widget.name),
+        title: Column(children: [ 
+                Text(widget.story.title),
+                StreamBuilder(
+                  stream: bloc.authorName.stream,
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData) {
+                      return Container();
+                    } else {
+                      final authorName = snapshot.data as String;
+                      return Text(authorName, style: const TextStyle(color: Colors.black, fontStyle: FontStyle.italic, fontSize: 11.0),);
+                    }
+                  })
+              ]),
         elevation: 0,
         actions: [
           StreamBuilder(
@@ -55,25 +57,81 @@ class _ReadingScreenState extends State<ReadingScreen> {
             },
           ),
           StreamBuilder(
-            stream: bloc.isFav.stream,
+            stream: bloc.allowUpdate.stream,
             builder: (_, snapshot) {
               if (!snapshot.hasData) {
                 return Container();
               } else {
-                bool isFav = snapshot.data as bool;
-                return IconButton(
-                  icon: isFav
-                      ? const FaIcon(FontAwesomeIcons.solidHeart,
-                          color: Colors.red)
-                      : const FaIcon(
-                          FontAwesomeIcons.heart,
-                        ),
-                  onPressed: () {
-                    isFav
-                        ? bloc.removeFromFav(widget.id)
-                        : bloc.addToFav(widget.id);
-                  },
-                );
+                bool allowUpdate = snapshot.data as bool;
+                if (allowUpdate) {
+                  return IconButton(
+                    icon: const FaIcon(FontAwesomeIcons.penToSquare),
+                    onPressed: () {
+                      bloc.openUpdateStory(widget.story.id!);
+                    },
+                  );
+                } else {
+                  return Container();
+                }
+              }
+            },
+          ),
+          StreamBuilder(
+            stream: bloc.allowDelete.stream,
+            builder: (_, snapshot) {
+              if (!snapshot.hasData) {
+                return Container();
+              } else {
+                bool allowDelete = snapshot.data as bool;
+                if (allowDelete) {
+                  return IconButton(
+                    icon: const FaIcon(FontAwesomeIcons.trash),
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: const Text(AppString.confirm),
+                            content: const Text(AppString.areUSureDelete),
+                            actions: [
+                              ElevatedButton(
+                                style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                                child: const Text(AppString.cancel, style: TextStyle(color: Colors.white),),
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                              ),
+                              ElevatedButton(
+                                style: ElevatedButton.styleFrom(backgroundColor: AppColor.primaryColor),
+                                child: StreamBuilder(
+                                  stream: bloc.loading.stream,
+                                  builder: (contextt, snapshot) {
+                                    if (!snapshot.hasData) {
+                                      return const Text(AppString.agree, style: TextStyle(color: Colors.black),);
+                                    } else {
+                                      final data = snapshot.data as bool;
+                                      if (data) {
+                                        return const CircularProgressIndicator();  
+                                      } else {
+                                        Navigator.of(context).pop();
+                                        return const Text(AppString.agree);
+                                      }
+                                    }
+                                  }
+                                ),
+                                onPressed: () {
+                                  bloc.delete(widget.story);
+                                },
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    },
+                  );
+                } else {
+                  return Container();
+                }
               }
             },
           ),
@@ -92,13 +150,9 @@ class _ReadingScreenState extends State<ReadingScreen> {
                 stream: bloc.stories.stream,
                 builder: (context, snapshot) {
                   if (!snapshot.hasData) {
-                    return SizedBox(
-                      child: SingleChildScrollView(
-                        child: bodyStory(widget.content, bloc),
-                      ),
-                    );
+                    return const CircularProgressIndicator();
                   } else {
-                    var data = snapshot.data as Stories;
+                    var data = snapshot.data as Story;
                     return SizedBox(
                       child: SingleChildScrollView(
                         child: bodyStory(data.content, bloc),
@@ -115,7 +169,56 @@ class _ReadingScreenState extends State<ReadingScreen> {
                   const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
               child: Column(
                 children: [
-                  playButton(bloc),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      StreamBuilder(
+                        stream: bloc.isFav.stream,
+                        builder: (_, snapshot) {
+                          if (!snapshot.hasData) {
+                            return Container();
+                          } else {
+                            bool isFav = snapshot.data as bool;
+                            return IconButton(
+                              icon: isFav
+                                  ? const FaIcon(FontAwesomeIcons.solidHeart,
+                                      color: Colors.red)
+                                  : const FaIcon(
+                                      FontAwesomeIcons.heart,
+                                    ),
+                              onPressed: () {
+                                isFav
+                                    ? bloc.removeFromFav(widget.story)
+                                    : bloc.addToFav(widget.story);
+                              },
+                            );
+                          }
+                        },
+                      ),
+                      playButton(bloc),
+                      GestureDetector(
+                        child: StreamBuilder(
+                          stream: bloc.speed.stream,
+                          builder: (context, snapshot) {
+                            if (!snapshot.hasData) {
+                              return const Text("");
+                            } else {
+                              final speed = snapshot.data as int;
+                              switch(speed) {
+                                case 0:
+                                  return const Text("0.5x");
+                                case 1:
+                                  return const Text("1x");
+                                case 2:
+                                  return const Text("2x");
+                              }
+                              return const Text("");
+                            }
+                          }
+                        ),
+                        onTap: () => bloc.changeSpeed(),
+                      )
+                    ]),
                   const SizedBox(
                     height: 5.0,
                   ),
@@ -168,7 +271,7 @@ Widget playButton(ReadingBloc bloc) {
             style: ElevatedButton.styleFrom(
               shape: const CircleBorder(),
               padding: const EdgeInsets.all(18),
-              primary: AppColor.primaryColor,
+              backgroundColor: AppColor.primaryColor,
             ),
           );
         }

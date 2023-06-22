@@ -1,25 +1,33 @@
-import 'dart:developer';
-
 import 'package:reading_book_4k/base/bloc_base.dart';
+import 'package:reading_book_4k/model/story.dart';
+import 'package:reading_book_4k/repository/story/story_repository.dart';
+import 'package:reading_book_4k/repository/story/story_repository_impl.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../../config/app_route.dart';
-import '../../data/titles.dart';
 
 class LibraryBloc extends BlocBase{
+
+  StoryRepository repo = StoryRepositoryImpl();
+
   @override
   void dispose() {
-    // TODO: implement dispose
+    stories.close();
   }
 
   @override
   void init() async {
-    titles.sink.add(await db.getTitles());
+    stories.sink.add(await repo.getAllStories());
   }
 
-  BehaviorSubject<List<Titles>> titles = BehaviorSubject();
+  BehaviorSubject<List<Story>> stories = BehaviorSubject();
 
-  void openStory(Titles title){
-    navigator.pushed(AppRoute.readingScreen, argument: ['', title.id, title.title]);
+  void openStory(Story story) async {
+    await navigator.pushed(AppRoute.readingScreen, argument: [story]);
+    stories.sink.add(await repo.getAllStories());
+  }
+  
+  Future<List<Story>> getSuggestions(String pattern) async {
+    return stories.value.where((element) => element.title.contains(pattern)).toList();
   }
 }

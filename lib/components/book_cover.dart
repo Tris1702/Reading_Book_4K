@@ -1,17 +1,12 @@
-import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:get_it/get_it.dart';
 import 'package:reading_book_4k/config/app_color.dart';
-import 'package:reading_book_4k/config/app_route.dart';
-import 'package:reading_book_4k/data/titles.dart';
-import 'package:reading_book_4k/services/navigator_service.dart';
+import 'package:reading_book_4k/model/story.dart';
 
 class BookCover extends StatelessWidget {
-  final Titles title;
-  final String from;
+  final Story story;
   final VoidCallback onPressed;
-  const BookCover({Key? key, required this.title, required this.from, required this.onPressed}) : super(key: key);
+  const BookCover({Key? key, required this.story, required this.onPressed}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +19,7 @@ class BookCover extends StatelessWidget {
           children: [
             Expanded(
               child: Image(
-                image: AssetImage(title.thumb),
+                image: NetworkImage(story.coverLink),
                 fit: BoxFit.fitHeight,
               ),
             ),
@@ -34,7 +29,7 @@ class BookCover extends StatelessWidget {
             Center(
               child: Padding(
                 padding: const EdgeInsets.all(10.0),
-                child: Text(title.title),
+                child: Text(story.title),
               ),
             ),
           ],
